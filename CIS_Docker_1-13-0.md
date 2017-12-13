@@ -351,7 +351,251 @@ service auditd restart
      1.  https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
 
 
-  
+### 1.7   审计Docker文件和目录 - / etc /docker（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+审计 /etc/docker
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。 / etc / docker是一个这样的目录。 它拥有用于Docker守护进程和Docker客户端之间的TLS通信的各种证书和密钥。 它必须经过审计。
+
+#### **审计**
+
+验证是否存在与/ var / lib / docker目录相对应的审计规则。
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep /var/lib/docker
+```
+
+这应该列出/ var / lib / docker目录的规则。
+
+#### **基线**
+
+为/ var / lib / docker目录添加一条规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /var/lib/docker -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。
+
+#### **参考文献**
+
+```
+ 1.  https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+```
+
+
+
+### 1.8   审计Docker文件和目录 - docker.service（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+必要时，审计 docker.service
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。 docker.service就是这样一个文件。 如果守护程序参数已被管理员更改，则docker.service文件可能存在。 它拥有Docker守护进程的各种参数。 必要时，必须进行审计。
+
+#### **审计**
+
+步骤1：找出文件位置：
+
+```shell
+systemctl show -p FragmentPath docker.service
+```
+
+步骤2：如果该文件不存在，则该基线不适用。 如果文件存在，请验证是否存在与该文件相对应的审计规则：
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep docker.service
+```
+
+这应该根据其位置列出docker.service的规则。
+
+#### **基线**
+
+如果该文件存在，请为其添加规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /usr/lib/systemd/system/docker.service -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。 docker.service文件可能在系统上不可用。
+
+#### **参考文献**
+
+```
+ 1.  https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+```
+
+
+
+### 1.9   审计Docker文件和目录 - docker.socket（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+必要时，审计 docker.socket
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。 docker.socket就是这样一个文件。 它拥有Docker守护进程套接字的各种参数。 必要时，必须进行审计。
+
+#### **审计**
+
+步骤1：找出文件位置：
+
+```shell
+systemctl show -p FragmentPath docker.socket
+```
+
+步骤2：如果该文件不存在，则该基线不适用。 如果文件存在，请验证是否存在与该文件相对应的审计规则：
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep docker.socket
+```
+
+这应该根据其位置列出docker.socket的规则。
+
+#### **基线**
+
+如果该文件存在，请为其添加规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /usr/lib/systemd/system/docker.socket -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。 docker.socket文件可能在系统上不可用。
+
+#### **参考文献**
+
+```
+ 1.  https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+```
+
+### 1.10   审计Docker文件和目录 - /etc/default/docker（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+必要时，审计 /etc/default/docker
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。 / etc / default / docker就是这样一个文件。 它拥有Docker守护进程的各种参数。 必要时，必须进行审计。
+
+#### **审计**
+
+验证是否存在与/ etc / default / docker文件相对应的审计规则。
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep /etc/default/docker
+```
+
+这应该列出/ etc / default / docker文件的规则。
+
+#### **基线**
+
+为/ etc / default / docker文件添加一条规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /etc/default/docker -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。 文件/ etc / default / docker可能在系统上不可用。 在这种情况下，这个建议是不适用的。
+
+#### **参考文献**
+
+```
+ 1.  https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+```
+
+
 
 ## 2 守护进程（daemon）配置
 

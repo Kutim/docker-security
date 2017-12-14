@@ -595,6 +595,185 @@ service auditd restart
  1.  https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
 ```
 
+### 1.11   审计Docker文件和目录 - /etc/docker/daemon.json（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+必要时，审计/etc/docker/daemon.json
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。 /etc/docker/daemon.json 就是这样一个文件。 它拥有Docker守护进程的各种参数。 必要时，必须进行审计。
+
+#### **审计**
+
+验证是否存在与 /etc/docker/daemon.json 文件相对应的审计规则。
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep /etc/docker/daemon.json
+```
+
+这应该列出 /etc/docker/daemon.json文件的规则。
+
+#### **基线**
+
+为 /etc/docker/daemon.json 文件添加一条规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /etc/docker/daemon.json -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。 文件 /etc/docker/daemon.json 可能在系统上不可用。 在这种情况下，这个建议是不适用的。
+
+#### **参考文献**
+
+```
+1. https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+2. https://docs.docker.com/engine/reference/commandline/daemon/#daemon- configuration-file
+```
+
+
+
+### 1.12   审计Docker文件和目录 - /usr/bin/docker-containerd（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+必要时，审计/usr/bin/docker-containerd
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。/usr/bin/docker-containerd 就是这样一个文件。 Docker现在依靠 containerd 和 runC 来产生容器。 必要时，必须进行审计。
+
+#### **审计**
+
+验证是否存在与 /usr/bin/docker-containerd 文件相对应的审计规则。
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep /usr/bin/docker-containerd
+```
+
+这应该列出  /usr/bin/docker-containerd 文件的规则。
+
+#### **基线**
+
+为 /usr/bin/docker-containerd 文件添加一条规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /usr/bin/docker-containerd -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。 文件 /usr/bin/docker- containerd  可能在系统上不可用。 在这种情况下，这个建议是不适用的。
+
+#### **参考文献**
+
+```
+1. https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+2. https://github.com/docker/docker/pull/20662 
+3. https://containerd.tools/
+```
+
+### 1.13   审计Docker文件和目录 - /usr/bin/docker-runc（scored）
+
+#### **配置适用性：**
+
+- 级别1- Linux Host OS
+
+#### **描述：**
+
+必要时，审计/usr/bin/docker-runc
+
+#### **缘由**
+
+除了审计您的常规Linux文件系统和系统调用外，还要审计所有Docker相关的文件和目录。 Docker守护进程以“root”权限运行。 它的行为取决于一些关键的文件和目录。/usr/bin/docker-runc 就是这样一个文件。 Docker现在依靠 containerd 和 runC 来产生容器。 必要时，必须进行审计。
+
+#### **审计**
+
+验证是否存在与 /usr/bin/docker-runc 文件相对应的审计规则。
+
+例如，执行以下命令：
+
+```shell
+auditctl -l | grep /usr/bin/docker-runc
+```
+
+这应该列出  /usr/bin/docker-runc 文件的规则。
+
+#### **基线**
+
+为 /usr/bin/docker-runc 文件添加一条规则。
+
+例如，
+在/etc/audit/audit.rules文件中添加如下行：
+
+```shell
+-w /usr/bin/docker-runc -k docker
+```
+
+然后，重新启动审计守护进程。 例如，
+
+```shell
+service auditd restart
+```
+
+#### **影响**
+
+审计生成相当大的日志文件。 确保定期转移和归档。 此外，创建一个单独的审计分区，以避免填充根文件系统。
+
+#### **默认值**
+
+默认情况下，不会审计Docker相关的文件和目录。 文件 /usr/bin/docker- runc  可能在系统上不可用。 在这种情况下，这个建议是不适用的。
+
+#### **参考文献**
+
+```
+1. https://access.redhat.com/documentation/en- US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/chap-system_auditing.html
+2. https://github.com/docker/docker/pull/20662
+3. https://containerd.tools/
+4. https://github.com/opencontainers/runc
+```
+
 
 
 ## 2 守护进程（daemon）配置
